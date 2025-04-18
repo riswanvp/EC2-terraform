@@ -17,8 +17,8 @@ provider "aws" {
 }
 
 resource "aws_key_pair" "deployer" {
-  key_name   = "Jenkins-key"
-  public_key = file("./Jenkins-key.pub")
+  key_name   = "${var.Project}-key"
+  public_key = file("./new-key.pub")
 }
 
 resource "aws_security_group" "allow-all" {
@@ -47,7 +47,7 @@ resource "aws_instance" "Jenkins-vm" {
   ami                    = var.image_id
   instance_type          = "t2.micro"
   subnet_id              = var.subnet_id
-  key_name               = aws_key_pair.deployer.id
+  key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.allow-all.id]
   tags = {
     Name = "${var.Project}-jenkins"
