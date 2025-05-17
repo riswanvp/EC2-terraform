@@ -54,3 +54,8 @@ resource "aws_instance" "Jenkins-vm" {
     env  = var.env
   }
 }
+resource "aws_eip" "Jenkins-eip" {
+  count = var.aws_static_ip == true ? 1 : 0 ##here condition checks if variable value equals to true create and attach it to instance 
+  instance = aws_instance.Jenkins-vm.id
+  domain = "vpc"
+}
