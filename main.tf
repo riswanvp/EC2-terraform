@@ -13,14 +13,20 @@ terraform {
 }
 provider "aws" {
   region = var.aws_region
-
+  default_tags {
+    tags = {
+      Project = "${var.Project}"
+      Environment = "${var.env}"
+    }
+  }
 }
-
+## Key Pair creation
 resource "aws_key_pair" "deployer" {
   key_name   = "${var.Project}-key"
   public_key = file("./new-key.pub")
 }
 
+## Security Group Creation
 resource "aws_security_group" "allow-all" {
   name   = "${var.Project}-${var.env}-SG"
   vpc_id = var.vpc_id
@@ -43,6 +49,7 @@ resource "aws_security_group_rule" "outbound" {
   security_group_id = aws_security_group.allow-all.id
 }
 
+##EC2 instance creation
 resource "aws_instance" "Jenkins-vm" {
   ami                    = var.image_id
   instance_type          = "t2.micro"
@@ -51,11 +58,16 @@ resource "aws_instance" "Jenkins-vm" {
   vpc_security_group_ids = [aws_security_group.allow-all.id]
   tags = {
     Name = "${var.Project}-jenkins"
-    env  = var.env
   }
 }
+
+
+##Elastic IP creation and assoiation
 resource "aws_eip" "Jenkins-eip" {
   count = var.aws_static_ip == true ? 1 : 0 ##here condition checks if variable value equals to true create and attach it to instance 
   instance = aws_instance.Jenkins-vm.id
   domain = "vpc"
+  tags = {
+    Name = "${var.Project}-jenkins-eip"
+  }
 }
