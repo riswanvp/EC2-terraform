@@ -15,7 +15,7 @@ provider "aws" {
   region = var.aws_region
   default_tags {
     tags = {
-      Project = "${var.Project}"
+      Project     = "${var.Project}"
       Environment = "${var.env}"
     }
   }
@@ -75,9 +75,9 @@ resource "aws_instance" "Jenkins-vm" {
 
 ##Elastic IP creation and assoiation
 resource "aws_eip" "Jenkins-eip" {
-  count = var.aws_static_ip == true ? 1 : 0 ##here condition checks if variable value equals to true create and attach it to instance 
+  count    = var.aws_static_ip == true ? 1 : 0 ##here condition checks if variable value equals to true create and attach it to instance 
   instance = aws_instance.Jenkins-vm.id
-  domain = "vpc"
+  domain   = "vpc"
   tags = {
     Name = "${var.Project}-jenkins-eip"
   }

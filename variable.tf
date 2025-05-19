@@ -29,6 +29,6 @@ variable "subnet_id" {
 }
 
 variable "aws_static_ip" {
-  type = bool
+  type    = bool
   default = false //change to true for creating and attaching eip  
 }
